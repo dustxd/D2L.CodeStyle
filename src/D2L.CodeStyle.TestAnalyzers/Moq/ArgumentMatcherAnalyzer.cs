@@ -62,11 +62,89 @@ namespace D2L.CodeStyle.TestAnalyzers.Moq {
 				IImmutableSet<ISymbol> argumentMatchers
 			) {
 
-			ISymbol methodSymbol = context.SemanticModel
+			ISymbol invocationSymbol = context.SemanticModel
 				.GetSymbolInfo( invocation.Expression )
 				.Symbol;
 
+			if( invocationSymbol is IMethodSymbol methodSymbol ) {
+
+				if( argumentMatchers.Contains( methodSymbol.OriginalDefinition ) ) {
+
+					ITypeSymbol returnType = methodSymbol.ReturnType;
+
+					if( TryGetMatchingArgumentType( context, invocation, out ITypeSymbol argumentType ) ) {
+
+						if( !returnType.Equals( argumentType )) {
+
+							ReportDiagnostic(
+									context,
+									invocation,
+									argumentType,
+									Diagnostics.TestMoqArgumentMatcherTypeMismatch
+								);
+						}
+					}
+				}
+			}
 		}
+
+		private static bool TryGetMatchingArgumentType(
+				SyntaxNodeAnalysisContext context,
+				InvocationExpressionSyntax invocation,
+				out ITypeSymbol argumentType
+			) {
+
+			if( invocation.Parent is ArgumentSyntax argument ) {
+
+				if( argument.Parent is ArgumentListSyntax argumentList ) {
+
+					int argumentIndex = argumentList.Arguments.IndexOf( argument );
+
+					if( argumentList.Parent is InvocationExpressionSyntax caller ) {
+
+						ISymbol callerSymbol = context.SemanticModel
+							.GetSymbolInfo( caller )
+							.Symbol;
+
+						if( callerSymbol is IMethodSymbol callerMethodSymbol ) {
+
+							argumentType = callerMethodSymbol.Parameters[argumentIndex].Type;
+							return true;
+						}
+					}
+				}
+			}
+
+			argumentType = null;
+			return false;
+		}
+
+		private void ReportDiagnostic(
+				SyntaxNodeAnalysisContext context,
+				InvocationExpressionSyntax invocation,
+				ISymbol argumentType,
+				DiagnosticDescriptor diagnosticDescriptor
+			) {
+
+			Location location = invocation.GetLocation();
+			string matcher = invocation.ToString();
+			string argument = argumentType.ToDisplayString( MemberDisplayFormat );
+
+			var diagnostic = Diagnostic.Create(
+					diagnosticDescriptor,
+					location,
+					matcher,
+					argument
+				);
+
+			context.ReportDiagnostic( diagnostic );
+		}
+
+		private static readonly SymbolDisplayFormat MemberDisplayFormat = new SymbolDisplayFormat(
+				memberOptions: SymbolDisplayMemberOptions.IncludeContainingType,
+				localOptions: SymbolDisplayLocalOptions.IncludeType,
+				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces
+			);
 
 		private static IImmutableSet<ISymbol> GetItArgumentMatcherMethods(
 				INamedTypeSymbol type,

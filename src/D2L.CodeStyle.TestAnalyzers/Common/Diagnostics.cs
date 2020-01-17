@@ -65,9 +65,9 @@ namespace D2L.CodeStyle.TestAnalyzers.Common {
 		public static readonly DiagnosticDescriptor TestMoqArgumentMatcherTypeMismatch = new DiagnosticDescriptor(
 			id: "D2LTESTS007",
 			title: "Moq Argument Matcher Type Mismatch",
-			messageFormat: "Matching argument of type '{0}' but member expects '{1}'.",
+			messageFormat: "The argument matcher '{0}' does not match argument type '{1}'.",
 			category: "Correctness",
-			defaultSeverity: DiagnosticSeverity.Warning,
+			defaultSeverity: DiagnosticSeverity.Error,
 			isEnabledByDefault: true,
 			description: "It.Is, It.IsAny, must match the same type as the argument."
 		);
