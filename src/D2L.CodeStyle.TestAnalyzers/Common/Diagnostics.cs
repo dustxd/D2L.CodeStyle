@@ -52,14 +52,24 @@ namespace D2L.CodeStyle.TestAnalyzers.Common {
 			description: "Custom service locators are expensive to instantiate and slow down tests significantly. Use the default locator instead."
 		);
 
-        public static readonly DiagnosticDescriptor TestAttributeMissed = new DiagnosticDescriptor(
-            id: "D2LTESTS006",
-            title: "Method not labelled as [Test], [Theory], [TestCase], or [TestCaseSource]",
-            messageFormat: "Method {0} is public, but does not have [Test], [Theory], [TestCase], or [TestCaseSource] attribute, add attribute or change the method visibility.",
-            category: "Correctness",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true,
-            description: "If a [Test], [Theory], [TestCase], or [TestCaseSource] attribute is missed the test will not be run, leading to false confidence in the code."
-        );
-    }
+		public static readonly DiagnosticDescriptor TestAttributeMissed = new DiagnosticDescriptor(
+			id: "D2LTESTS006",
+			title: "Method not labelled as [Test], [Theory], [TestCase], or [TestCaseSource]",
+			messageFormat: "Method {0} is public, but does not have [Test], [Theory], [TestCase], or [TestCaseSource] attribute, add attribute or change the method visibility.",
+			category: "Correctness",
+			defaultSeverity: DiagnosticSeverity.Warning,
+			isEnabledByDefault: true,
+			description: "If a [Test], [Theory], [TestCase], or [TestCaseSource] attribute is missed the test will not be run, leading to false confidence in the code."
+		);
+
+		public static readonly DiagnosticDescriptor TestMoqArgumentMatcherTypeMismatch = new DiagnosticDescriptor(
+			id: "D2LTESTS007",
+			title: "Moq Argument Matcher Type Mismatch",
+			messageFormat: "Matching argument of type '{0}' but member expects '{1}'.",
+			category: "Correctness",
+			defaultSeverity: DiagnosticSeverity.Warning,
+			isEnabledByDefault: true,
+			description: "It.Is, It.IsAny, must match the same type as the argument."
+		);
+	}
 }
