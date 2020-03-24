@@ -495,5 +495,14 @@ namespace D2L.CodeStyle.Analyzers {
 			isEnabledByDefault: true
 		);
 
+		public static readonly DiagnosticDescriptor CacheItemTypeShouldBeImmutable = new DiagnosticDescriptor(
+			id: "D2L0059",
+			title: "Cache item type is not immutable.",
+			messageFormat: "Cache item type '{0}' should be marked with [Immutable].",
+			category: "Safety",
+			defaultSeverity: DiagnosticSeverity.Warning,
+			isEnabledByDefault: true,
+			description: "The cache item type should be marked [Immutable] but the type supplied was not immutable."
+		);
 	}
 }
