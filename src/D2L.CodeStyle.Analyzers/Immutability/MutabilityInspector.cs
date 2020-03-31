@@ -168,9 +168,13 @@ namespace D2L.CodeStyle.Analyzers.Immutability {
 
 				if( result.IsMutable ) {
 					if( result.Target == MutabilityTarget.Member ) {
+
 						// modify the result to prefix with container member.
 						string[] prefix = type.GetImmutableContainerTypePrefixes();
-						result = result.WithPrefixedMember( prefix[i] );
+						if( prefix != null && prefix.Length > 0 ) {
+							result = result.WithPrefixedMember( prefix[ i ] );
+						}
+
 					} else {
 						// modify the result to target the type argument if the
 						// target is not a member
@@ -238,7 +242,7 @@ namespace D2L.CodeStyle.Analyzers.Immutability {
 			}
 
 			ImmutabilityScope argumentScope =
-				hostType.TypeArguments[ordinal].GetImmutabilityScope();
+				hostType.TypeArguments[ ordinal ].GetImmutabilityScope();
 
 			if( argumentScope == ImmutabilityScope.SelfAndChildren ) {
 				// We can assume T is immutable since it's marked for
