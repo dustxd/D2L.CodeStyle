@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using D2L.CodeStyle.Analyzers.Immutability;
 using Microsoft.CodeAnalysis;
@@ -55,37 +57,45 @@ namespace D2L.CodeStyle.Analyzers.ApiUsage.Caching {
 				MutabilityInspector inspector
 			) {
 
-			ISymbol symbol = context.SemanticModel
-				.GetSymbolInfo( invocation.Expression )
-				.Symbol;
+			try {
 
-			if( symbol == null ) {
-				return;
-			}
+				ISymbol symbol = context.SemanticModel
+					.GetSymbolInfo( invocation.Expression )
+					.Symbol;
 
-			if( !IsGenericCacheMethod( symbol, genericCacheMethods ) ) {
-				return;
-			}
+				if( symbol == null ) {
+					return;
+				}
 
-			if( !( symbol is IMethodSymbol methodSymbol ) ) {
-				return;
-			}
+				if( !IsGenericCacheMethod( symbol, genericCacheMethods ) ) {
+					return;
+				}
 
-			ITypeSymbol itemType = methodSymbol.TypeArguments[ methodSymbol.TypeArguments.Length - 1 ];
+				if( !( symbol is IMethodSymbol methodSymbol ) ) {
+					return;
+				}
 
-			if( itemType.TypeKind == TypeKind.TypeParameter ) {
-				return;
-			}
+				ITypeSymbol itemType = methodSymbol.TypeArguments[ methodSymbol.TypeArguments.Length - 1 ];
 
-			MutabilityInspectionResult result = inspector.InspectConcreteType( itemType );
-			if( result.IsMutable ) {
+				if( itemType.TypeKind == TypeKind.TypeParameter ) {
+					return;
+				}
 
-				ReportDiagnostic(
-						context,
-						invocation.GetLocation(),
-						itemType,
-						Diagnostics.CacheItemTypeShouldBeImmutable
-					);
+				MutabilityInspectionResult result = inspector.InspectConcreteType( itemType );
+				if( result.IsMutable ) {
+
+					ReportDiagnostic(
+							context,
+							invocation.GetLocation(),
+							itemType,
+							Diagnostics.CacheItemTypeShouldBeImmutable
+						);
+				}
+
+			} catch( Exception err ) {
+				File.AppendAllLines( @"C:\temp\anazlyers.txt", new[] {
+					err.ToString()
+				} );
 			}
 		}
 

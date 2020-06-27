@@ -157,7 +157,7 @@ namespace D2L.CodeStyle.Analyzers.Immutability {
 			ImmutableHashSet<string>.Builder unauditedReasonsBuilder = ImmutableHashSet.CreateBuilder<string>();
 
 			for( int i = 0; i < namedType.TypeArguments.Length; i++ ) {
-				ITypeSymbol arg = namedType.TypeArguments[i];
+				ITypeSymbol arg = namedType.TypeArguments[ i ];
 
 				MutabilityInspectionResult result = DoInspectType(
 					type: arg,
