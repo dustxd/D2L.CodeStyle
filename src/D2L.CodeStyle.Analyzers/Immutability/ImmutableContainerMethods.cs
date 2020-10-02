@@ -9,6 +9,7 @@ namespace D2L.CodeStyle.Analyzers.Immutability {
 		/// A list of immutable container types (i.e., types that hold other types)
 		/// </summary>
 		private static readonly ImmutableDictionary<string, string[]> ImmutableContainerTypes = new Dictionary<string, string[]> {
+			["D2L.LOR.Search.Expressions.ComparableVariable"] = new[] { "Value" },
 			["D2L.LP.Utilities.DeferredInitializer"] = new[] { "Value" },
 			["D2L.LP.Extensibility.Activation.Domain.IPlugins"] = new[] { "[]" },
 			["D2L.LP.Extensibility.Plugins.IInstancePlugins"] = new[] { "[]" },
